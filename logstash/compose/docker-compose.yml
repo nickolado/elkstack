@@ -1,3 +1,10 @@
+# foi feito para cada instância um docker-compose para que quando o ambiente esteja em produção e seja
+# necessário manutenções, para que não impacte todas as instâncias
+
+# Processo iniciado por Daniel Richard
+# Última revisão em 28/10/2024
+
+
 version: '3.8'
 
 services:
@@ -8,11 +15,11 @@ services:
     volumes:
       - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
       - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container
-      - /opt/elk_stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - /opt/elk_stack/logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - /opt/elk_stack/logstash/csv:/csv
+      - /opt/elk_stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro # copia o arquivo para dentro do container, ro = read only
+      - /opt/elk_stack/logstash/pipeline:/usr/share/logstash/pipeline:ro # copia o arquivo para dentro do container, ro = read only
+      - /opt/elk_stack/logstash/csv:/csv # copia o arquivo para dentro do container, ro = read only
     ports:
-      - "8180:8180"
+      - "8180:8180" # todas essas portas são padrões do logstash
       - "5000:5000" 
       - "9600:9600"
       - "5044:5044"
