@@ -1,17 +1,23 @@
+# foi feito para cada instância um docker-compose para que quando o ambiente esteja em produção e seja
+# necessário manutenções, para que não impacte todas as instâncias
+
+# Processo iniciado por Daniel Richard
+# Última revisão em 28/10/2024
+
 version: '3.8'
 
 services:
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.0
-    container_name: kibana
+    container_name: kibana 
     restart: unless-stopped # reinicia processo em caso de parada do container
     environment:
-    - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # depois tentar configurar senhas, dando falha e nao consigo fazer o processo rodar
-    - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário
-    - ELASTICSEARCH_PASSWORD=tvk!2009        # Senha do usuário
-    - SERVER_PUBLICBASEURL=https://192.168.1.110
+    - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # ip do elasticsearch
+    - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário do kibana
+    - ELASTICSEARCH_PASSWORD=tvk!2009        # Senha do usuário 
+    - SERVER_PUBLICBASEURL=https://192.168.1.110 # serve para remover uma msg de erro que aparecia em relação a não ter uma url na conf
     ports:
-      - "5601:5601"
+      - "5601:5601" # porta padrão  
     networks:
       - elk
     volumes:
