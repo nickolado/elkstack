@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    environment:
+    - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # depois tentar configurar senhas, dando falha e nao consigo fazer o processo rodar
+    - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário
+    - ELASTICSEARCH_PASSWORD=tvk!2009        # Senha do usuário
+    - SERVER_PUBLICBASEURL=https://192.168.1.110
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    volumes:
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container             
+
+networks:
+  elk:
+    external: true # mesma situação do volume esdata

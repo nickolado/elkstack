@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
+    container_name: elasticsearch
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    environment:    
+      - discovery.type=single-node
+      - xpack.security.enabled=true # true habilita a segurança e caixa de login
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data # banco do elastic com volume persistente
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container
+    ports:
+      - "9200:9200"
+    networks:
+      - elk
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.0
+    container_name: kibana
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    environment:
+    - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # depois tentar configurar senhas, dando falha e nao consigo fazer o processo rodar
+    - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário
+    - ELASTICSEARCH_PASSWORD=tvk!2009        # Senha do usuário
+    - SERVER_PUBLICBASEURL=https://192.168.1.110
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    volumes:
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container  
+    depends_on:
+      - elasticsearch   
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.0
+    container_name: logstash
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    volumes:
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container
+      - /opt/elk-stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - /opt/elk-stack/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - /opt/elk-stack/logstash/csv:/csv
+    ports:
+      - "8180:8180"
+      - "5000:5000" 
+      - "9600:9600"
+      - "5044:5044"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch              
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - /opt/elk-stack/nginx/nginx.conf:/etc/nginx.conf:ro
+    networks:
+      - elk
+volumes:
+  esdata:
+networks:
+  elk:
+    driver: bridge

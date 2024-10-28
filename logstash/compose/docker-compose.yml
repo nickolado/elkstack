@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+ logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.0
+    container_name: logstash
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    volumes:
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container
+      - /opt/elk_stack/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - /opt/elk_stack/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - /opt/elk_stack/logstash/csv:/csv
+    ports:
+      - "8180:8180"
+      - "5000:5000" 
+      - "9600:9600"
+      - "5044:5044"
+    networks:
+      - elk
+networks:
+  elk:
+    external: true # deve ser habilitado    

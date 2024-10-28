@@ -1,0 +1,34 @@
+# foi feito para cada instância um docker-compose para que quando o ambiente esteja em produção e seja
+# necessário manutenções, para que não impacte todas as instâncias
+
+# Processo iniciado por Daniel Richard
+# Última revisão em 28/10/2024
+
+version: '3.8'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0 # versão da imagem 7.17.0, testei com versões mais novas mas esta foi a que funcionou melhor.
+    container_name: elasticsearch # nome do container
+    restart: unless-stopped # reinicia processo em caso de parada do container
+    environment:    
+      - discovery.type=single-node # ambiente de nó unico. essa config pode ser alterada caso as aplicações cresçam e necessite de uso de clusters para maior processamento de dados pelo elastic e uso de mais instâncias
+      - xpack.security.enabled=true # true habilita a segurança e caixa de login
+      - bootstrap.memory_lock=true # bloqueia a mem usada para evitar que o SO use o swap. Ideal para garantir um bom desempenho
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m" # tem a ver com o JVM (java virtual machine), ainda não entendi mt bem para que serve mas está ai
+    volumes:
+      - esdata:/usr/share/elasticsearch/data # banco do elastic com volume persistente
+      - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
+      - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container
+    ports:
+      - "9200:9200" # porta padrão
+    networks:
+      - elk  # rede para comunicação com as outras instâncias
+
+volumes:
+  esdata:
+      external: true # o volume esdata foi criado com comando docker volume create, ou seja, de forma externa, por isso esta função deve ser habilitada 
+
+networks:
+  elk:
+    external: true # mesma situação do volume esdata
