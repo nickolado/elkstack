@@ -1,16 +1,15 @@
-# foi feito para cada instância um docker-compose para que quando o ambiente esteja em produção e seja
-# necessário manutenções, para que não impacte todas as instâncias
+# foi feito um docker-compose para cada instância pois acredito que desta forma seja mais fácil gerenciar quando o ambiente subir para a produção
 
-# Processo iniciado por Daniel Richard
+# Processo iniciado por Daniel Richard - Infra
 # Última revisão em 28/10/2024
 
 version: '3.8'
 
 services:
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.0
+    image: docker.elastic.co/kibana/kibana:7.17.0 # imagem 7.17.0 pois não consegui com as versões mais novas.
     container_name: kibana 
-    restart: unless-stopped # reinicia processo em caso de parada do container
+    restart: always # reinicia a instância em caso de parada do container
     environment:
     - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # ip do elasticsearch
     - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário do kibana
@@ -19,11 +18,11 @@ services:
     ports:
       - "5601:5601" # porta padrão  
     networks:
-      - elk
+      - elk 
     volumes:
       - /etc/timezone:/etc/timezone:ro # comando para definir o horário do servidor para o container
       - /etc/localtime:/etc/localtime:ro # comando para definir o horário do servidor para o container             
 
 networks:
   elk:
-    external: true # mesma situação do volume esdata
+    external: true # deve ser habilitado, pois a rede foi criada externamente

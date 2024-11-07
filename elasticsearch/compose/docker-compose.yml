@@ -10,7 +10,7 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0 # versão da imagem 7.17.0, testei com versões mais novas mas esta foi a que funcionou melhor.
     container_name: elasticsearch # nome do container
-    restart: unless-stopped # reinicia processo em caso de parada do container
+    restart: always # reinicia processo em caso de parada do container
     environment:    
       - discovery.type=single-node # ambiente de nó unico. essa config pode ser alterada caso as aplicações cresçam e necessite de uso de clusters para maior processamento de dados pelo elastic e uso de mais instâncias
       - xpack.security.enabled=true # true habilita a segurança e caixa de login
