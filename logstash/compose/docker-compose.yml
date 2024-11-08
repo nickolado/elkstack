@@ -4,7 +4,6 @@
 # Processo iniciado por Daniel Richard
 # Última revisão em 28/10/2024
 
-
 version: '3.8'
 
 services:

@@ -10,11 +10,8 @@ services:
     image: docker.elastic.co/kibana/kibana:7.17.0 # imagem 7.17.0 pois não consegui com as versões mais novas.
     container_name: kibana 
     restart: always # reinicia a instância em caso de parada do container
-    environment:
-    - ELASTICSEARCH_HOSTS=http://192.168.1.110:9200 # ip do elasticsearch
-    - ELASTICSEARCH_USERNAME=kibana_system      # Nome do usuário do kibana
-    - ELASTICSEARCH_PASSWORD=tvk!2009        # Senha do usuário 
-    - SERVER_PUBLICBASEURL=https://192.168.1.110 # serve para remover uma msg de erro que aparecia em relação a não ter uma url na conf
+    env_file:
+      - .env
     ports:
       - "5601:5601" # porta padrão  
     networks:
